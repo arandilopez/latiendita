@@ -30,7 +30,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="descuento">Descuento</label>
-                                    <input type="number" name="descuento" class="form-control" value="{{old('descuento')}}">
+                                    <input type="number" name="descuento" class="form-control" value="{{old('descuento')}}" v-model="descuento">
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-6">
@@ -100,7 +100,32 @@
                                             <td>@{{ (producto.unidades * producto.precio_unitario) }}</td>
                                         </tr>
                                     </tbody>
+                                    <tfoot style="text-align:right">
+                                        <tr >
+                                            <td colspan="3">Subtotal</td>
+                                            <td>@{{subtotal}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">Descuento</td>
+                                            <td>@{{descuento}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">Iva</td>
+                                            <td>@{{iva}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3">Total</td>
+                                            <td>@{{total}}</td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button type="button" class="btn btn-primary" v-on:click="guardarOrdenCompra">
+                                    Guardar
+                                </button>
                             </div>
                         </div>
                     </form>

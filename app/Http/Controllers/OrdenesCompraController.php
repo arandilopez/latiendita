@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Cliente;
 use App\Producto;
+use App\OrdenCompra;
+use DB;
 
 class OrdenesCompraController extends Controller
 {
@@ -41,7 +43,45 @@ class OrdenesCompraController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'cliente' => 'required',
+            'descuento' => 'nullable|numeric',
+            'productos' => 'required|array',
+            'productos.*.producto_id' => 'required',
+            'productos.*.unidades' => 'required|numeric',
+            'productos.*.descripcion' => 'required',
+            'productos.*.precio_unitario' => 'required|numeric',
+        ]);
+        $success = false;
+        DB::transaction(function () use (&$request, &$success) {
+            $ordenCompra = new OrdenCompra();
+            $ordenCompra->cliente()->associate( $request->input('cliente') );
+            $ordenCompra->user()->associate( auth()->user() );
+            $ordenCompra->descuento = $request->input('descuento', 0);
+            $inputProductos = collect( $request->input('productos') );
+            $subtotal = $inputProductos->reduce(function ($carry, $producto) {
+                return $carry + ($producto['unidades'] * $producto['precio_unitario']);
+            }, 0);
+            $ordenCompra->subtotal = $subtotal;
+            $subtotalDescontado = ($subtotal - $ordenCompra->descuento);
+            $ordenCompra->iva = ($subtotalDescontado * 0.16);
+            $ordenCompra->total = ($subtotalDescontado + $ordenCompra->iva);
+            $ordenCompra->save();
+            $inputProductos->each(function ($inputProducto) use (&$ordenCompra) {
+                $ordenCompra->productos()->attach($inputProducto['producto_id'], [
+                    'unidades' => $inputProducto['unidades'],
+                    'precio_unitario' => $inputProducto['precio_unitario'],
+                    'importe' => ($inputProducto['precio_unitario'] * $inputProducto['unidades']),
+                    'descripcion' => $inputProducto['descripcion']
+                ]);
+            });
+            $success = true;
+        });
+        if ($success && $request->ajax()) {
+            return response()->json(['data' => 'creado'], 201);
+        } else {
+            return response()->json(['data' => 'error'], 500);
+        }
     }
 
     /**
