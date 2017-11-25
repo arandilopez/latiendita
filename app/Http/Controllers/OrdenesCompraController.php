@@ -10,6 +10,10 @@ use DB;
 
 class OrdenesCompraController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -56,7 +60,7 @@ class OrdenesCompraController extends Controller
         DB::transaction(function () use (&$request, &$success) {
             $ordenCompra = new OrdenCompra();
             $ordenCompra->cliente()->associate( $request->input('cliente') );
-            $ordenCompra->user()->associate( auth()->user() );
+            $ordenCompra->user()->associate( auth()->user()->id );
             $ordenCompra->descuento = $request->input('descuento', 0);
             $inputProductos = collect( $request->input('productos') );
             $subtotal = $inputProductos->reduce(function ($carry, $producto) {
@@ -70,8 +74,8 @@ class OrdenesCompraController extends Controller
             $inputProductos->each(function ($inputProducto) use (&$ordenCompra) {
                 $ordenCompra->productos()->attach($inputProducto['producto_id'], [
                     'unidades' => $inputProducto['unidades'],
-                    'precio_unitario' => $inputProducto['precio_unitario'],
                     'importe' => ($inputProducto['precio_unitario'] * $inputProducto['unidades']),
+                    'precio_unitario' => $inputProducto['precio_unitario'],
                     'descripcion' => $inputProducto['descripcion']
                 ]);
             });
@@ -92,7 +96,8 @@ class OrdenesCompraController extends Controller
      */
     public function show($id)
     {
-        //
+        $orden = OrdenCompra::findOrFail($id);
+        return view('ordenes_compra.show')->with(['ordenCompra' => $orden]);
     }
 
     /**

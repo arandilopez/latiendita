@@ -28,7 +28,7 @@ class OrdenCompra extends Model
 
     public function productos()
     {
-        return $this->belongsToMany(Producto::class, 'orden_compra_producto', 'producto_id', 'orden_compra_id')->withPivot([
+        return $this->belongsToMany(Producto::class, 'orden_compra_producto', 'orden_compra_id', 'producto_id')->withPivot([
             'unidades', 'importe', 'precio_unitario', 'descripcion'
         ])->withTimestamps()->as('movimiento');
     }
