@@ -21,7 +21,10 @@ class OrdenesCompraController extends Controller
      */
     public function index()
     {
-        return view('ordenes_compra.index');
+        $ordenes = OrdenCompra::all();
+        return view('ordenes_compra.index')->with([
+            'ordenesCompra' => $ordenes
+        ]);
     }
 
     /**

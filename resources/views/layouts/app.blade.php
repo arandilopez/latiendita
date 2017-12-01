@@ -42,6 +42,9 @@
                         <li class="{{ str_contains(Request::path(), 'productos') ? 'active' : '' }}">
                             <a href="{{route('productos.index')}}">Productos</a>
                         </li>
+                        <li class="{{ str_contains(Request::path(), 'ordenes_compra') ? 'active' : '' }}">
+                            <a href="{{route('ordenes_compra.index')}}">Ordenes de Compra</a>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
