@@ -104,6 +104,18 @@ class OrdenesCompraController extends Controller
     }
 
     /**
+     * Display the specified resource as pdf.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function pdf($id)
+    {
+        $orden = OrdenCompra::findOrFail($id);
+        return view('ordenes_compra.pdf')->with(['ordenCompra' => $orden]);
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id

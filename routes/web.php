@@ -22,3 +22,4 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('productos', 'ProductosController');
 Route::resource('clientes', 'ClientesController');
 Route::resource('ordenes_compra', 'OrdenesCompraController');
+Route::get('ordenes_compra/{id}/pdf', 'OrdenesCompraController@pdf')->name('ordenes_compra.pdf');
