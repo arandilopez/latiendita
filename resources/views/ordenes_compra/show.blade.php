@@ -7,6 +7,11 @@
             <div class="panel">
                 <div class="panel-body">
                     <div class="row">
+                        <div class="col-md-12 pull-right">
+                            <a href="{{route('ordenes_compra.pdf', ['id' => $ordenCompra->id])}}" target="_blank" class="btn btn-default">Ver PDF</a>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-4 col-sm-4">
                             <strong>Folio:</strong>
                             {{ 'ODC-' . $ordenCompra->id }}

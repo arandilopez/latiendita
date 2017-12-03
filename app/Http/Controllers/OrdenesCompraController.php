@@ -6,7 +6,11 @@ use Illuminate\Http\Request;
 use App\Cliente;
 use App\Producto;
 use App\OrdenCompra;
+use App\Mail\OrdenCompraCreada;
 use DB;
+use PDF;
+use Excel;
+use Mail;
 
 class OrdenesCompraController extends Controller
 {
@@ -14,6 +18,7 @@ class OrdenesCompraController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,6 +30,25 @@ class OrdenesCompraController extends Controller
         return view('ordenes_compra.index')->with([
             'ordenesCompra' => $ordenes
         ]);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function excel()
+    {
+        $ordenes = OrdenCompra::all();
+        $excel = Excel::create('Reporte de Compras', function ($excel) use (&$ordenes) {
+            $excel->sheet('Ordenes de Compra', function ($sheet) use (&$ordenes) {
+                $sheet->loadView('ordenes_compra.excel', [
+                    'ordenesCompra' => $ordenes
+                ]);
+            });
+        });
+
+        return $excel->export('xlsx');
     }
 
     /**
@@ -60,7 +84,8 @@ class OrdenesCompraController extends Controller
             'productos.*.precio_unitario' => 'required|numeric',
         ]);
         $success = false;
-        DB::transaction(function () use (&$request, &$success) {
+        $ordenCompra = null;
+        DB::transaction(function () use (&$request, &$success, &$ordenCompra) {
             $ordenCompra = new OrdenCompra();
             $ordenCompra->cliente()->associate( $request->input('cliente') );
             $ordenCompra->user()->associate( auth()->user()->id );
@@ -85,6 +110,13 @@ class OrdenesCompraController extends Controller
             $success = true;
         });
         if ($success && $request->ajax()) {
+            if (! is_null($ordenCompra) ) {
+                $pdf = PDF::loadView('ordenes_compra.pdf', [
+                    'ordenCompra' => $ordenCompra
+                ])->setPaper('Letter', 'portrait')->output();
+
+                Mail::send(new OrdenCompraCreada($ordenCompra, $pdf));
+            }
             return response()->json(['data' => 'creado'], 201);
         } else {
             return response()->json(['data' => 'error'], 500);
@@ -112,7 +144,11 @@ class OrdenesCompraController extends Controller
     public function pdf($id)
     {
         $orden = OrdenCompra::findOrFail($id);
-        return view('ordenes_compra.pdf')->with(['ordenCompra' => $orden]);
+        $pdf = PDF::loadView('ordenes_compra.pdf', [
+            'ordenCompra' => $orden
+        ])->setPaper('Letter', 'portrait');
+        return $pdf->stream('orden_compra.pdf');
+        // return view('ordenes_compra.pdf')->with(['ordenCompra' => $orden]);
     }
 
     /**

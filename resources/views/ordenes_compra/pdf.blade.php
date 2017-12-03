@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8">
-        <title>Orden de Compra</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <style>
         body {
             background-color: #fff;
             font-size: 16px;
             line-height: 16px;
-            font-family: "Helvetica";
+            font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
             color: #303030;
         }
 
         table {
             width: 100%;
-            line-height: inherit;
             text-align: left;
         }
 
         table.productos > tbody > tr > td, table.productos > tbody > tr > th {
             border-bottom: 1px solid #303030;
-            margin: 0 auto;
         }
 
         table.productos > tbody > tr.totales {
@@ -45,6 +42,13 @@
     <body>
         <table cellpadding="0" cellspacing="0">
             <tr>
+                <td colspan="4" style="text-align: center;">
+                    <h1>La Tiendita</h1>
+                    <h4>La Tiendita S.A. de C.V.</h4>
+                    Tablaje ctastral 687687 CP:97000
+                </td>
+            </tr>
+            <tr>
                 <td>
                     <strong>Folio:</strong>
                     {{ 'ODC-' . $ordenCompra->id }}
@@ -54,7 +58,7 @@
                     {{ $ordenCompra->cliente->nombre }}
                 </td>
                 <td>
-                    <strong>Usuario:</strong>
+                    <strong>Fecha:</strong>
                     {{ $ordenCompra->user->name }}
                 </td>
             </tr>
@@ -73,7 +77,7 @@
                                     {{ $producto->nombre }} <br>
                                     {{ $producto->movimiento->descripcion }}
                                 </td>
-                                <td>{{ $producto->movimiento->precio_unitario }}</td>
+                                <td>$ {{ $producto->movimiento->precio_unitario }}</td>
                                 <td>{{ $producto->movimiento->unidades }}</td>
                                 <td>$ {{ $producto->movimiento->importe }}</td>
                             @empty

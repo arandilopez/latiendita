@@ -23,9 +23,10 @@ class ClientesController extends Controller
             $clientes = Cliente::where('nombre', 'LIKE', $search)
                 ->orWhere('email', 'LIKE', $search)
                 ->orWhere('telefono', 'LIKE', $search)
-                ->get();
+                ->orderBy('nombre', 'asc')
+                ->paginate(10);
         } else {
-            $clientes = Cliente::all();
+            $clientes = Cliente::orderBy('nombre', 'asc')->paginate(10);
         }
         return view('clientes.index')->with(['clientes' => $clientes]);
     }

@@ -8,6 +8,7 @@
                 <a href="{{ route('ordenes_compra.create') }}" class="btn btn-primary">
                     Nueva Orden de Compra
                 </a>
+                <a href="{{ route('ordenes_compra.excel') }}" class="btn btn-success" target="_blank">Descargar</a>
                 <form class="form-inline pull-right" action="{{route('ordenes_compra.index')}}" method="get">
                     <input type="text" name="search" class="form-control">
                     <button type="submit" class="btn btn-info">Buscar</button>

@@ -11,10 +11,16 @@ class OrdenCompra extends Model
 {
     // Laravel intenta adivinar el nombre como: orden_compras
     protected $table = 'ordenes_compra';
+    // public $timestamps = false;
 
     protected $fillable = [
         'iva', 'total', 'subtotal', 'descuento'
     ];
+
+    public function scopeDeducibles($query)
+    {
+        return $query->where('total', '>', 200);
+    }
 
     public function cliente()
     {
